@@ -8,7 +8,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
         self.user_repository = UserRepository(MongoClient(os.getenv("MONGODB_URI")))
-        self.public_paths = ["/auth","/health", "/docs", "/openapi.json"]
+        self.public_paths = ["/auth","/audio", "/docs", "/openapi.json"]
 
     async def dispatch(self, request: Request, call_next):
         if not any(request.url.path.startswith(path) for path in self.public_paths):
