@@ -2,7 +2,7 @@ import os
 from fastapi import UploadFile
 from services.speech_to_text.base import SpeechToTextProvider
 from repositories.transcription_repository import TranscriptionRepository
-
+import uuid
 class TranscriptionService:
     def __init__(self, speech_to_text_provider: SpeechToTextProvider, transcription_repo: TranscriptionRepository):
         self.speech_to_text_provider = speech_to_text_provider
@@ -11,8 +11,10 @@ class TranscriptionService:
         os.makedirs("audio", exist_ok=True)
 
     async def transcribe_audio(self, audio_file: UploadFile) -> str:
+
+        unique_filename = f"{uuid.uuid4()}.wav"
         # Lưu file audio vào thư mục audio
-        file_path = os.path.join("audio", audio_file.filename)
+        file_path = os.path.join("audio", unique_filename)
         with open(file_path, "wb") as f:
             f.write(await audio_file.read())
 
@@ -28,7 +30,7 @@ class TranscriptionService:
 
         # Lưu kết quả vào MongoDB, bao gồm file_path
         transcription_id = self.transcription_repo.save_transcription(
-            filename=audio_file.filename,
+            filename=unique_filename,
             file_path=file_path,
             text=text,
             status=status,

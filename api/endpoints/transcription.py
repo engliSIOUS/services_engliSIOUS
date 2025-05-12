@@ -4,7 +4,7 @@ from dependencies.dependencies import get_transcription_repository
 from services.transcription.transcription_service import TranscriptionService
 from repositories.transcription_repository import TranscriptionRepository
 from schemas.transcription_schema import TranscriptionResponse
-
+from pathlib import Path
 router = APIRouter()
 
 @router.post("/transcriptions/", response_model=TranscriptionResponse)
@@ -13,6 +13,9 @@ async def create_transcription(
     service: TranscriptionService = Depends(get_transcription_service),
     repo: TranscriptionRepository = Depends(get_transcription_repository)
 ):
+    file_extension = Path(audio_file.filename).suffix.lower()
+    if file_extension != '.wav':
+        raise HTTPException(status_code=400, detail="Only WAV files are allowed")
     if not audio_file.content_type.startswith("audio/"):
         raise HTTPException(status_code=400, detail="File must be an audio file")
     
