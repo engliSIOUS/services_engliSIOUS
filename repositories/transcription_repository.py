@@ -4,7 +4,7 @@ from datetime import datetime
 from os import getenv
 class TranscriptionRepository:
     def __init__(self, mongo_client: MongoClient):
-        self.db = mongo_client["speech_to_text_db"]
+        self.db = mongo_client["english_db"]
         self.collection = self.db["transcriptions"]
 
     def save_transcription(self, filename: str, file_path: str, text: str, status: str, error_message: str = None) -> str:
@@ -23,5 +23,5 @@ class TranscriptionRepository:
         return self.collection.find_one({"_id": ObjectId(transcription_id)})
 
 def get_mongo_client() -> MongoClient:
-    # Thay thế bằng connection string thực tế
-    return MongoClient(getenv("MONGO_URI"))
+
+    return MongoClient(getenv('MONGODB_URI'))

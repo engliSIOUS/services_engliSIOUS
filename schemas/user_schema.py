@@ -9,7 +9,7 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: str
     email: EmailStr
-    created_at: datetime
+
 
 class UserLogin(BaseModel):
     email: EmailStr
