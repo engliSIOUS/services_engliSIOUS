@@ -1,7 +1,7 @@
 import os
 from fastapi import UploadFile
-from .speech_to_text.base import SpeechToTextProvider
-from ..repositories.transcription_repository import TranscriptionRepository
+from services.speech_to_text.base import SpeechToTextProvider
+from repositories.transcription_repository import TranscriptionRepository
 
 class TranscriptionService:
     def __init__(self, speech_to_text_provider: SpeechToTextProvider, transcription_repo: TranscriptionRepository):

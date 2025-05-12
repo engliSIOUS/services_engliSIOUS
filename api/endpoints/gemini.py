@@ -5,9 +5,9 @@ from bson.objectid import ObjectId, InvalidId
 from services.gemini.conversation_manager import ConversationManager
 from repositories.conversation_repository import ConversationRepository
 from services.gemini.vocabulary_extractor import VocabularyExtractor
+from fastapi import APIRouter
 
-app = FastAPI(title="English Conversation API")
-
+router = APIRouter()
 # Request model for converse
 class ConverseRequest(BaseModel):
     user_id: str = "anonymous"
@@ -49,7 +49,7 @@ class DictionaryResponse(BaseModel):
     phonetic: str
     meanings: List[DictionaryMeaning]
 
-@app.post("/converse", response_model=ConverseResponse, status_code=status.HTTP_200_OK)
+@router.post("/converse", response_model=ConverseResponse, status_code=status.HTTP_200_OK)
 async def converse(request: ConverseRequest):
     """Handle conversation requests."""
     # Validate conversation_id
@@ -80,7 +80,7 @@ async def converse(request: ConverseRequest):
         vocabulary=result["vocabulary"]
     )
 
-@app.get("/conversations", response_model=PaginatedConversationsResponse, status_code=status.HTTP_200_OK)
+@router.get("/conversations", response_model=PaginatedConversationsResponse, status_code=status.HTTP_200_OK)
 async def get_conversations(user_id : str = None, page: int = 1):
     if page < 1:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Page number must be positive")
@@ -98,7 +98,7 @@ async def get_conversations(user_id : str = None, page: int = 1):
         current_page=result["current_page"]
     )
 
-@app.get("/dictionary/{word}", response_model=DictionaryResponse, status_code=status.HTTP_200_OK)
+@router.get("/dictionary/{word}", response_model=DictionaryResponse, status_code=status.HTTP_200_OK)
 async def lookup_word(word: str):
     extractor = VocabularyExtractor()
     try:

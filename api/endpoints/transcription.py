@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from ..dependencies import get_transcription_service
-from ..dependencies import get_transcription_repository
-from ...services.transcription_service import TranscriptionService
-from ...repositories.transcription_repository import TranscriptionRepository
-from ...schemas.transcription_schema import TranscriptionResponse
+from dependencies.dependencies import get_transcription_service
+from dependencies.dependencies import get_transcription_repository
+from services.transcription.transcription_service import TranscriptionService
+from repositories.transcription_repository import TranscriptionRepository
+from schemas.transcription_schema import TranscriptionResponse
 
 router = APIRouter()
 
