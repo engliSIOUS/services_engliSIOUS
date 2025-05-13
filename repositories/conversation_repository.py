@@ -1,14 +1,14 @@
 from pymongo import MongoClient, DESCENDING
 from datetime import datetime
-from services.gemini.config import MONGODB_URI
+from services.gemini.config import MONGODB_URI,DB_NAME,CONVERSATION_COLLECTION
 from typing import List, Dict
 from bson import ObjectId
 
 class ConversationRepository:
     def __init__(self, uri: str = MONGODB_URI):
         self.client = MongoClient(uri)
-        self.db = self.client["conversation_db"]
-        self.collection = self.db["conversations"]
+        self.db = self.client[DB_NAME]
+        self.collection = self.db[CONVERSATION_COLLECTION]
 
     def save_conversation(self, conversation_id: ObjectId, title: str, user_id: str, history: list[dict], follow_up_questions : list[str] = None,
                           vocabulary : list[dict[str, str]] = None, error_message: str = None):

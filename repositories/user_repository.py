@@ -3,11 +3,12 @@ from bson import ObjectId
 from datetime import datetime
 from typing import Optional
 from schemas.user_schema import  SessionResponse
+from os import getenv
 class UserRepository:
     def __init__(self, mongo_client: MongoClient):
-        self.db = mongo_client["english_db"]
-        self.users = self.db["users"]
-        self.sessions = self.db["sessions"]
+        self.db = mongo_client[getenv("DB_NAME")]
+        self.users = self.db[getenv("USER_COLLECTION")]
+        self.sessions = self.db[getenv("SESSION_COLLECTION")]
 
     def create_user(self, email: str, hashed_password: str) -> str:
         user = {
