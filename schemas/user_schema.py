@@ -19,3 +19,8 @@ class SessionResponse(BaseModel):
     session_id: str
     user_id: str
     created_at: datetime
+
+class UserSession(BaseModel):
+    session_id: str
+    user_id: str
+    created_at: datetime
