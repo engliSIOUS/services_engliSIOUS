@@ -14,10 +14,8 @@ class TranscriptionService:
         # Lấy user_id từ session_id
         user_id = user_session.user_id
         # Lấy bản ghi từ MongoDB
-        transcription = self.transcription_repo.get_transcription(transcription_id, user_id)
-        if not transcription:
-            return None
-        return transcription
+        return self.transcription_repo.get_transcription(transcription_id, user_id)
+
     
     async def transcribe_audio(self, audio_file: UploadFile,user_session:UserSession) -> str:
 

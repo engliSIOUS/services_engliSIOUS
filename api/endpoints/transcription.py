@@ -24,7 +24,8 @@ async def create_transcription(
     
     transcription_id = await service.transcribe_audio(audio_file,user_session)
     transcription = repo.get_transcription(transcription_id)
-    
+    if not transcription:
+        raise HTTPException(status_code=404, detail="Transcription not found")
     return TranscriptionResponse(
         id=str(transcription["_id"]),
         filename=transcription["filename"],
@@ -38,10 +39,10 @@ async def create_transcription(
 @router.get("/transcriptions/{transcription_id}", response_model=TranscriptionResponse)
 async def get_transcription(
     transcription_id: str,
-    repo: TranscriptionRepository = Depends(get_transcription_repository),
+    service: TranscriptionService = Depends(get_transcription_service),
     user_session: UserSession = Depends(get_user_session) 
 ):
-    transcription = repo.get_transcription(transcription_id, user_session)
+    transcription = service.get_transcription(transcription_id, user_session)
     if not transcription:
         raise HTTPException(status_code=404, detail="Transcription not found")
     
