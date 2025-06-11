@@ -21,11 +21,11 @@ async def create_transcription(
     repo: TranscriptionRepository = Depends(get_transcription_repository),
     user_session: UserSession = Depends(get_user_session)
 ):
-    allowed_extensions = {".wav", ".mp3", ".mp4", ".m4a"}
+    allowed_extensions = {".wav", ".mp3", ".mp4", ".m4a",".aac"}
     file_extension = Path(audio_file.filename).suffix.lower()
     
     if file_extension not in allowed_extensions:
-        raise HTTPException(status_code=400, detail="Only WAV, MP3, MP4, or M4A files are allowed")
+        raise HTTPException(status_code=400, detail="Only WAV, MP3, MP4,AAC or M4A files are allowed")
     if not audio_file.content_type.startswith("audio/"):
         raise HTTPException(status_code=400, detail="File must be an audio file")
     
