@@ -52,8 +52,8 @@ app.include_router(auth.router, prefix='/auth', tags=["auth"])
 # Mount the 'audio' directory to serve static files
 app.mount("/audio", StaticFiles(directory="audio"), name="audio")
 
-if __name__ == "__main__":
-    host = os.getenv("FASTAPI_HOST", "0.0.0.0")  
-    port = int(os.getenv("FASTAPI_PORT", 8000)) 
-    uvicorn.run(app, host=host, port=port)
+# if __name__ == "__main__":
+#     host = os.getenv("FASTAPI_HOST", "0.0.0.0")  
+#     port = int(os.getenv("FASTAPI_PORT", 8000)) 
+#     uvicorn.run(app, host=host, port=port)
 

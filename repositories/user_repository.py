@@ -25,7 +25,7 @@ class UserRepository:
     def create_session(self, user_id: str) -> SessionResponse:
         session = {
             "user_id": ObjectId(user_id),
-            "created_at": datetime.now().isoformat()
+            "created_at": datetime.now().isoformat(), 
         }
         result = self.sessions.insert_one(session)
         return SessionResponse(
@@ -35,7 +35,9 @@ class UserRepository:
         )
 
     def get_session(self, session_id: str) -> Optional[dict]:
-        return self.sessions.find_one({"_id": ObjectId(session_id)})
+        session_info = self.sessions.find_one({"_id": ObjectId(session_id)})
+        session_info.put("session_id", str(session_info["_id"]))
+        return session_info
 
     def delete_session(self, session_id: str):
         self.sessions.delete_one({"_id": ObjectId(session_id)})

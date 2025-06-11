@@ -6,7 +6,7 @@ from os import getenv
 class TranscriptionRepository:
     def __init__(self, mongo_client: MongoClient):
         self.db = mongo_client[getenv("DB_NAME")]
-        self.collection = self.db[getenv("TRANSCRIPTION_COLLECTION")]
+        self.collection = self.db[getenv("TRANSCRIPT_COLLECTION")]
 
     def save_transcription(self,user_id:str, filename: str, file_path: str, text: str, status: str, error_message: str = None) -> str:
         doc = {

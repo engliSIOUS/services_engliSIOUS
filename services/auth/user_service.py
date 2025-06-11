@@ -32,3 +32,12 @@ class UserService:
                 detail="Session not found"
             )
         self.user_repo.delete_session(session_id)
+
+    def get_session(self, token: str) -> SessionResponse:
+        session = self.user_repo.get_session(token)
+        if not session:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Unauthorized"
+            )
+        return SessionResponse(session_id=session["session_id"], user_id=str(session["user_id"]), email=session["email"])
