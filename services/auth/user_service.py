@@ -40,4 +40,4 @@ class UserService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Unauthorized"
             )
-        return SessionResponse(session_id=session["session_id"], user_id=str(session["user_id"]), email=session["email"])
+        return SessionResponse(session_id=session["session_id"], user_id=str(session["user_id"]), created_at=session["created_at"])

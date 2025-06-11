@@ -26,12 +26,12 @@ class TranscriptionService:
         # Lưu file audio vào thư mục audio
         file_path = os.path.join("audio", unique_filename)
         temp_file_path = os.path.join("audio", f"temp_{uuid.uuid4()}{file_extension}")
-        with open(file_path, "wb") as f:
+        with open(temp_file_path, "wb") as f:
             f.write(await audio_file.read())
 
         try:
             if file_extension != '.wav':
-                audio = AudioSegment.from_file(temp_file_path, format=file_extension[1:])  # Bỏ dấu chấm
+                audio = AudioSegment.from_file(file=temp_file_path, format=file_extension[1:])  # Bỏ dấu chấm
                 audio.export(file_path, format="wav")  # Chuyển đổi sang WAV
                 os.remove(temp_file_path)  # Xóa file tạm
             else:

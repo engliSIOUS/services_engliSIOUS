@@ -36,8 +36,12 @@ class UserRepository:
 
     def get_session(self, session_id: str) -> Optional[dict]:
         session_info = self.sessions.find_one({"_id": ObjectId(session_id)})
-        session_info.put("session_id", str(session_info["_id"]))
-        return session_info
+        session_response = {
+            "session_id": str(session_info["_id"]),
+            "user_id": str(session_info["user_id"]),
+            "created_at": session_info["created_at"]
+        } 
+        return session_response
 
     def delete_session(self, session_id: str):
         self.sessions.delete_one({"_id": ObjectId(session_id)})
