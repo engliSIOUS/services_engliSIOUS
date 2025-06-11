@@ -30,18 +30,24 @@ async def create_transcription(
         raise HTTPException(status_code=400, detail="File must be an audio file")
     
     transcription_id = await service.transcribe_audio(audio_file,user_session)
-    transcription = repo.get_transcription(transcription_id)
+    transcription =  repo.get_transcription(transcription_id)
+
     if not transcription:
         raise HTTPException(status_code=404, detail="Transcription not found")
+    tokenized_text = service.tokenize_text(transcription["text"])
+    if not tokenized_text:
+        tokenized_text = transcription["text"].split()
     return TranscriptionResponse(
         id=str(transcription["_id"]),
         filename=transcription["filename"],
         file_path=transcription["file_path"],  # Thêm file_path vào response
         text=transcription["text"],
+        text_tokenized=tokenized_text,
         created_at=transcription["created_at"],
         status=transcription["status"],
         error_message=transcription["error_message"]
     )
+        
 
 @router.get("/transcriptions/{transcription_id}", response_model=TranscriptionResponse)
 async def get_transcription(
@@ -49,19 +55,22 @@ async def get_transcription(
     service: TranscriptionService = Depends(get_transcription_service),
     user_session: UserSession = Depends(get_user_session) 
 ):
-    transcription = service.get_transcription(transcription_id, user_session)
+    transcription = await service.get_transcription(transcription_id, user_session)
     if not transcription:
         raise HTTPException(status_code=404, detail="Transcription not found")
-    
+    tokenized_text = service.tokenize_text(transcription["text"])
+    if not tokenized_text:
+        tokenized_text = transcription["text"].split()
     return TranscriptionResponse(
         id=str(transcription["_id"]),
-        session_id=transcription["session_id"],
         filename=transcription["filename"],
         file_path=transcription["file_path"],  # Thêm file_path vào response
         text=transcription["text"],
+        text_tokenized=tokenized_text,
         created_at=transcription["created_at"],
         status=transcription["status"],
-        error_message=transcription["error_message"]
+        error_message=transcription["error_message"],
+
     )
 
 @router.post("/text-to-speech/", response_class=FileResponse)

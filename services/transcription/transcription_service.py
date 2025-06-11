@@ -7,6 +7,10 @@ from pydub import AudioSegment
 from pathlib import Path
 import uuid
 import subprocess
+import spacy
+nlp = spacy.load("en_core_web_sm")
+
+
 class TranscriptionService:
     def __init__(self, speech_to_text_provider: SpeechToTextProvider, transcription_repo: TranscriptionRepository):
         self.speech_to_text_provider = speech_to_text_provider
@@ -81,3 +85,7 @@ class TranscriptionService:
 
         return transcription_id
     
+    def tokenize_text(self,data: str) -> list:
+        doc = nlp(data)
+        return [str(token) for token in doc if not token.is_punct]
+        

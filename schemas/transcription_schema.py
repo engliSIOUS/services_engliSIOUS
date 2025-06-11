@@ -18,6 +18,6 @@ class TranscriptionResponse(BaseModel):
     created_at: datetime
     status: str
     error_message: Optional[str] = None
-
+    text_tokenized: list   # Thêm trường text_tokenized
     class Config:
         from_attributes = True
