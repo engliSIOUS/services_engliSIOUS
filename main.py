@@ -4,6 +4,8 @@ from middlewares.auth_middleware import AuthMiddleware
 from fastapi.staticfiles import StaticFiles
 from configs.api_config import API_PREFIX
 from fastapi.openapi.utils import get_openapi
+import uvicorn
+import os
 app = FastAPI(title="Englisious API", version="1.0.0")
 
 # Custom OpenAPI schema
@@ -49,4 +51,9 @@ app.include_router(auth.router, prefix='/auth', tags=["auth"])
 
 # Mount the 'audio' directory to serve static files
 app.mount("/audio", StaticFiles(directory="audio"), name="audio")
+
+if __name__ == "__main__":
+    host = os.getenv("FASTAPI_HOST", "0.0.0.0")  
+    port = int(os.getenv("FASTAPI_PORT", 8000)) 
+    uvicorn.run(app, host=host, port=port)
 
