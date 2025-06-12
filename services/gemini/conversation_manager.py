@@ -39,3 +39,17 @@ class ConversationManager:
     
     def get_conversation_id(self) -> str:
         return self.gemini_client.get_conversation_id()
+    
+    def quick_definition(self, word: str) -> Dict:
+        if not word.strip():
+            return self.response_formatter.format_error("Word cannot be empty.")
+        
+        result = self.gemini_client.quick_translate(word)
+        if not result:
+            return self.response_formatter.format_error("Failed to generate word definition.")
+        
+        return self.response_formatter.format_response(
+            response=result["definition"],
+            follow_up_questions=[],
+            vocabulary=[{"word": result["word"], "definition": result["definition"]}]
+        )

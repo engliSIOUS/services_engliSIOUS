@@ -49,6 +49,11 @@ class DictionaryResponse(BaseModel):
     phonetic: str
     meanings: List[DictionaryMeaning]
 
+# Response model for word translation
+class WordTranslationResponse(BaseModel):
+    word: str
+    definition: str
+
 @router.post("/converse", response_model=ConverseResponse, status_code=status.HTTP_200_OK)
 async def converse(request: ConverseRequest):
     """Handle conversation requests."""
@@ -106,3 +111,18 @@ async def lookup_word(word: str):
         return DictionaryResponse(**result)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+@router.get("/quick_definition/{word}", response_model=WordTranslationResponse, status_code=status.HTTP_200_OK)
+async def quick_definition(word: str, user_id: str = "anonymous"):
+    """Handle quick word translation requests using Gemini AI."""
+    db = ConversationRepository()
+    manager = ConversationManager(user_id=user_id, db=db)
+    
+    result = manager.quick_definition(word)
+    if "Error" in result["response"]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["response"])
+    
+    return WordTranslationResponse(
+        word=result["vocabulary"][0]["word"],
+        definition=result["vocabulary"][0]["definition"]
+    )

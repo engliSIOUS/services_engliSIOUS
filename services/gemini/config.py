@@ -50,6 +50,15 @@ RESPONSE_SCHEMA = {
     "required": ["title", "response", "follow_up_questions", "vocabulary"]
 }
 
+DICTIONARY_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "word": {"type": "string"},
+        "definition": {"type": "string"}
+    },
+    "required": ["word", "definition"]
+}
+
 GENERATION_CONFIG = {
     'temperature': 1,
     'max_output_tokens': 2048,
@@ -57,6 +66,15 @@ GENERATION_CONFIG = {
     'top_k': 64,
     'response_mime_type': 'application/json',
     'response_schema': RESPONSE_SCHEMA
+}
+
+DICTIONARY_GENERATION_CONFIG = {
+    'temperature': 1,
+    'max_output_tokens': 100,
+    'top_p': 0.95,
+    'top_k': 64,
+    'response_mime_type': 'application/json',
+    'response_schema': DICTIONARY_SCHEMA
 }
 
 SAFETY_SETTINGS = [

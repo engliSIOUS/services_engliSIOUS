@@ -1,4 +1,4 @@
-from .config import genai, MODEL, API_KEY, CONTEXT, GENERATION_CONFIG, SAFETY_SETTINGS
+from .config import genai, MODEL, API_KEY, CONTEXT, GENERATION_CONFIG, SAFETY_SETTINGS, DICTIONARY_GENERATION_CONFIG
 from typing import List, Dict, Optional
 import json
 from pydantic import BaseModel
@@ -26,6 +26,12 @@ class GeminiClient:
             model_name=MODEL,
             system_instruction=CONTEXT,
             generation_config=GENERATION_CONFIG,
+            safety_settings=SAFETY_SETTINGS
+        )
+        self.dictionary_model = genai.GenerativeModel(
+            model_name=MODEL,
+            system_instruction="You are a language expert providing concise word definitions.",
+            generation_config=DICTIONARY_GENERATION_CONFIG,
             safety_settings=SAFETY_SETTINGS
         )
         self.db = db
@@ -90,3 +96,28 @@ class GeminiClient:
     
     def get_conversation_id(self) -> str:
         return str(self.conversation_id)
+    
+    def quick_translate(self, word: str) -> Optional[Dict]:
+        prompt = f"""Provide a concise English definition (around 8 words) for the word '{word}'. 
+        Return the response in JSON format with fields: 'word' (the input word) and 'definition' (the concise definition). 
+        Example: {{"word": "happy", "definition": "Feeling or showing pleasure or contentment."}}"""
+
+        try:
+            response = self.dictionary_model.generate_content(contents=prompt)
+            parsed_response = json.loads(response.text)
+            return {
+                "word": parsed_response["word"],
+                "definition": parsed_response["definition"]
+            }
+        except Exception as e:
+            if self.db:
+                self.db.save_conversation(
+                    conversation_id=self.conversation_id,
+                    title=self.title,
+                    user_id=self.user_id,
+                    history=self.conversation_history + [{"role": "system", "text": f"Failed to translate word: {word}"}],
+                    follow_up_questions=[],
+                    vocabulary=[],
+                    error_message=str(e)
+                )
+            return None
