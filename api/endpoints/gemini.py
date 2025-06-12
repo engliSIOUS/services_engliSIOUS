@@ -121,10 +121,10 @@ async def lookup_word(word: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 @router.get("/quick_definition/{word}", response_model=WordTranslationResponse, status_code=status.HTTP_200_OK)
-async def quick_definition(word: str, user_id: str = "anonymous"):
+async def quick_definition(word: str):
     """Handle quick word translation requests using Gemini AI."""
     db = ConversationRepository()
-    manager = ConversationManager(user_id=user_id, db=db)
+    manager = ConversationManager( db=db)
     
     result = manager.quick_definition(word)
     if "Error" in result["response"]:
