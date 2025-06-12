@@ -6,8 +6,12 @@ from services.gemini.conversation_manager import ConversationManager
 from repositories.conversation_repository import ConversationRepository
 from services.gemini.vocabulary_extractor import VocabularyExtractor
 from fastapi import APIRouter
-
+from services.transcription.transcription_service import nlp 
 router = APIRouter()
+def tokenize_text(data: str) -> list:
+    doc = nlp(data)
+    return [str(token) for token in doc if not token.is_punct]
+ 
 # Request model for converse
 class ConverseRequest(BaseModel):
     user_id: str = "anonymous"
@@ -21,6 +25,7 @@ class ConverseResponse(BaseModel):
     response: str
     follow_up_questions: List[dict]
     vocabulary: List[dict]
+    tokenized_text: List[str]
 
 # Response model for conversations
 class ConversationSummary(BaseModel):
@@ -76,11 +81,14 @@ async def converse(request: ConverseRequest):
     result = manager.process_input(request.user_input)
     if "Error" in result["response"]:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["response"])
-
+    tokenized_text = tokenize_text(result["response"])
+    if not tokenized_text:
+        tokenized_text = result["response"].split()
     return ConverseResponse(
         conversation_id=manager.get_conversation_id(),
         title=manager.gemini_client.title,
         response=result["response"],
+        tokenized_text=tokenized_text,
         follow_up_questions=result["follow_up_questions"],
         vocabulary=result["vocabulary"]
     )

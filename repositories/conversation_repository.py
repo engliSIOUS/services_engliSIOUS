@@ -3,7 +3,12 @@ from datetime import datetime
 from services.gemini.config import MONGODB_URI,DB_NAME,CONVERSATION_COLLECTION
 from typing import List, Dict
 from bson import ObjectId
+from services.transcription.transcription_service import nlp
 
+def tokenize_text(data: str) -> list:
+    doc = nlp(data)
+    return [str(token) for token in doc if not token.is_punct]
+ 
 class ConversationRepository:
     def __init__(self, uri: str = MONGODB_URI):
         self.client = MongoClient(uri)
@@ -53,10 +58,16 @@ class ConversationRepository:
         conversations = []
 
         for doc in documents:
+            history_with_tokenized = []
+            for item in doc["history"]:
+                item_copy = item.copy()
+                item_copy["text_tokenized"] = tokenize_text(item_copy["text"]) if "text" in item_copy else []
+                history_with_tokenized.append(item_copy)
+
             conversations.append({
                 "conversation_id" : str(doc["conversation_id"]),
                 "title" : doc["title"],
-                "history" : doc["history"],
+                "history" : history_with_tokenized,
                 "created_at" : doc["created_at"]                 
             })
 
