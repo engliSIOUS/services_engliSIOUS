@@ -4,8 +4,9 @@ from middlewares.auth_middleware import AuthMiddleware
 from fastapi.staticfiles import StaticFiles
 from configs.api_config import API_PREFIX
 from fastapi.openapi.utils import get_openapi
-import uvicorn
-import os
+import shutil
+import subprocess
+
 app = FastAPI(title="Englisious API", version="1.0.0")
 
 # Custom OpenAPI schema
@@ -51,6 +52,20 @@ app.include_router(auth.router, prefix='/auth', tags=["auth"])
 
 # Mount the 'audio' directory to serve static files
 app.mount("/audio", StaticFiles(directory="audio"), name="audio")
+
+def check_ffmpeg():
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError(
+            "ffmpeg is not installed or not found in PATH. "
+            "Please install ffmpeg: https://ffmpeg.org/download.html"
+        )
+    try:
+        subprocess.run(["ffmpeg", "-version"], capture_output=True, check=True)
+    except subprocess.CalledProcessError:
+        raise RuntimeError("ffmpeg is installed but not working correctly.")
+
+
+check_ffmpeg()
 
 # if __name__ == "__main__":
 #     host = os.getenv("FASTAPI_HOST", "0.0.0.0")  

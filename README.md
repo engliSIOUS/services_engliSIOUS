@@ -13,7 +13,7 @@
     python -m venv venv
     venv\Scripts\activate     
     pip install -r requirements.txt
-
+    Create .env file follow structure from env.txt
 
 4. **Run the Application**  
     Start the application by executing the main script:  
